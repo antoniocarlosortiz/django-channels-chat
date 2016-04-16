@@ -13,4 +13,6 @@
     Or, you can visit <code>{{ request.scheme }}://{{ request.get_host }}/any-path-you-want</code> 
     to create a arbitrary room or join one whose name you know.
   </p>
+  <a href="{% url 'auth:logout' %}?next={{ request.path }}">Logout</a>
+  <a href="{% url 'social:begin' 'facebook' %}?next={{ request.path }}">Login with Facebook</a>
 {% endblock content %}
