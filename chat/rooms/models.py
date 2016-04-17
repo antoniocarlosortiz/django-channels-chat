@@ -37,7 +37,7 @@ class Message(models.Model):
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}'.format(upload_to=user_directory_path)
+    return 'user_{0}/{1}'.format(instance.owner.id, filename)
 
 
 class Profile(models.Model):
@@ -49,12 +49,4 @@ class Profile(models.Model):
     owner = models.OneToOneField(User, related_name='profile')
     avatar_image = models.ImageField(
             upload_to=user_directory_path, blank=True)
-
-    @property
-    def avatar_url(self):
-        file_name = 'default_avatar.png'
-        if self.avatar_image:
-            file_name = re.split('/', self.avatar_image.url)[-1]
-        #fix this!
-        return settings.AVATAR_IMG_URL + file_name
 
