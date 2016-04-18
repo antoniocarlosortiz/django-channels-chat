@@ -12,7 +12,8 @@ def get_facebook_avatar(strategy, user, response, details,
     except Profile.DoesNotExist:
         profile = Profile.objects.create(owner=user)
 
-    profile.full_name = '{0} {1}'.format(user.first_name, user.last_name)
+    if profie.avatar_image:
+        return
 
     if "facebook" in kwargs['backend'].redirect_uri:
         image_url = 'http://graph.facebook.com/%s/picture?type=large' % \

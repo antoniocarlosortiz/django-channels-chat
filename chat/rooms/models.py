@@ -17,6 +17,7 @@ class Room(models.Model):
 
 
 class Message(models.Model):
+    owner = models.ForeignKey(Profile, related_name='messages')
     room = models.ForeignKey(Room, related_name='messages')
     handle = models.TextField()
     message = models.TextField()

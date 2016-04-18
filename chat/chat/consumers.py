@@ -2,7 +2,7 @@ import json
 
 from channels import Group
 from channels.sessions import channel_session
-from rooms.models import Room
+from rooms.models import Room, Profile
 
 @channel_session
 def ws_connect(message):
@@ -41,12 +41,15 @@ def ws_receive(message):
         print 'websocket message is not json text=%s' % message['text']
         return
 
-    if set(data.keys()) != set(('handle', 'message')):
+    if set(data.keys()) != set(('handle', 'message', 'owner')):
         print 'websocket message unexpected format data=%s' % data
 
     if data:
-        print 'chat message room=%s handle=%s message=%s' % (room.label, data['handle'], data['message'])
-        m = room.messages.create(**data)
+        print 'chat message room={0} handle={1} message={2} owner={3}'.format(room.label, data['handle'], data['message'], data['owner'])
+        profile = Profile.objects.get(pk=data['owner'])
+        m = room.messages.create(handle=data['handle'],
+                                 message=data['message'],
+                                 owner=profile)
 
         Group('chat-' + label, channel_layer=message.channel_layer).send({'text': json.dumps(m.as_dict())})
 

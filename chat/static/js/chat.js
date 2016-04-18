@@ -7,7 +7,7 @@ $(function() {
         var data = JSON.parse(message.data);
         var chat = $("#chat")
         var ele = $('<tr></tr>')
-
+        
         ele.append(
             $("<td></td>").text(data.timestamp)
         )
@@ -23,6 +23,7 @@ $(function() {
 
     $("#chatform").on("submit", function(event) {
         var message = {
+            owner: '{{ request.user.profile.pk }}',
             handle: $('#handle').val(),
             message: $('#message').val(),
         }
