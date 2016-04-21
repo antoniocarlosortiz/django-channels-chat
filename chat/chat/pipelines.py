@@ -12,7 +12,7 @@ def get_facebook_avatar(strategy, user, response, details,
     except Profile.DoesNotExist:
         profile = Profile.objects.create(owner=user)
 
-    if profie.avatar_image:
+    if profile.avatar_image:
         return
 
     if "facebook" in kwargs['backend'].redirect_uri:

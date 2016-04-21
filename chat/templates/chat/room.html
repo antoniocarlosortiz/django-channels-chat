@@ -7,15 +7,12 @@
     Anyone with this URL can join the room and chat: 
     <code>{{ request.scheme }}://{{ request.get_host }}/{{ room.label }}</code> 
   </p>
-  <p>
-    <label for="handle">Your name:</label>
-    <input id="handle" type="text" placeholder="handle">
-  </p>
   <form id="chatform">
     <table id="chat">
       <tbody>
         {% for message in messages %}
           <tr>
+            <td><img class="img-circle" src='{{ message.owner.avatar_image.url }}'/></td>
             <td>{{ message.formatted_timestamp }}</td>
             <td>{{ message.handle }}</td>
             <td>{{ message.message }}</td>
@@ -37,5 +34,41 @@
 {% block afterbody %}
   <script type="text/javascript" src='{% static "js/jquery.min.js" %}'></script>
   <script type="text/javascript" src='{% static "js/reconnecting-websocket.min.js" %}'></script>
-  <script type="text/javascript" src='{% static "js/chat.js" %}'></script>
+  <script type="text/javascript">
+    $(function() {
+        // When we're using HTTPS, use WSS too.
+        var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+        var chatsock = new ReconnectingWebSocket(ws_scheme + '://' + window.location.host + "/chat" + window.location.pathname);
+        
+        chatsock.onmessage = function(message) {
+            var data = JSON.parse(message.data);
+            var chat = $("#chat")
+            var ele = $('<tr></tr>')
+            
+            ele.append(
+                $("<td></td>").append('<img class="img-circle" src=' + data.avatar_image_url + '/>')
+            )
+
+            ele.append(
+                $("<td></td>").text(data.timestamp)
+            )
+
+            ele.append(
+                $("<td></td>").text(data.message)
+            )
+            
+            chat.append(ele)
+        };
+
+        $("#chatform").on("submit", function(event) {
+            var message = {
+                owner: {{ request.user.profile.pk }},
+                message: $('#message').val(),
+            }
+            chatsock.send(JSON.stringify(message));
+            $("#message").val('').focus();
+            return false;
+        });
+    });    
+  </script>
 {% endblock afterbody %}

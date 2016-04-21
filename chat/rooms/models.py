@@ -16,26 +16,6 @@ class Room(models.Model):
         return self.label
 
 
-class Message(models.Model):
-    owner = models.ForeignKey(Profile, related_name='messages')
-    room = models.ForeignKey(Room, related_name='messages')
-    handle = models.TextField()
-    message = models.TextField()
-    timestamp = models.DateTimeField(default=timezone.now, db_index=True)
-
-    def __unicode__(self):
-        return "[{timestamp}] {handle}: {message}".format(**self.as_dict())
-
-    @property
-    def formatted_timestamp(self):
-        return self.timestamp.strftime("%b %-d %-I:%M %p")
-
-    def as_dict(self):
-        return {'handle': self.handle,
-                'message': self.message,
-                'timestamp': self.formatted_timestamp}
-
-
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'user_{0}/{1}'.format(instance.owner.id, filename)
@@ -50,4 +30,25 @@ class Profile(models.Model):
     owner = models.OneToOneField(User, related_name='profile')
     avatar_image = models.ImageField(
             upload_to=user_directory_path, blank=True)
+
+
+class Message(models.Model):
+    owner = models.ForeignKey(Profile, related_name='messages')
+    room = models.ForeignKey(Room, related_name='messages')
+    message = models.TextField()
+    timestamp = models.DateTimeField(default=timezone.now, db_index=True)
+
+    def __unicode__(self):
+        return "[{timestamp}] {owner}: {message}".format(**self.as_dict())
+
+    @property
+    def formatted_timestamp(self):
+        return self.timestamp.strftime("%b %-d %-I:%M %p")
+
+    def as_dict(self):
+        return {'avatar_image_url': self.owner.avatar_image.url,
+                'message': self.message,
+                'timestamp': self.formatted_timestamp}
+
+
 

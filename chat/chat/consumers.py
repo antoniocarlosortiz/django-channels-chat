@@ -41,14 +41,13 @@ def ws_receive(message):
         print 'websocket message is not json text=%s' % message['text']
         return
 
-    if set(data.keys()) != set(('handle', 'message', 'owner')):
+    if set(data.keys()) != set(('message', 'owner')):
         print 'websocket message unexpected format data=%s' % data
 
     if data:
-        print 'chat message room={0} handle={1} message={2} owner={3}'.format(room.label, data['handle'], data['message'], data['owner'])
+        print 'chat message room={0} message={1} owner={2}'.format(room.label, data['message'], data['owner'])
         profile = Profile.objects.get(pk=data['owner'])
-        m = room.messages.create(handle=data['handle'],
-                                 message=data['message'],
+        m = room.messages.create(message=data['message'],
                                  owner=profile)
 
         Group('chat-' + label, channel_layer=message.channel_layer).send({'text': json.dumps(m.as_dict())})
