@@ -14,7 +14,7 @@ a replica of [https://github.com/jacobian/channels-example](https://github.com/j
 3. in another terminal `python manage.py runworker`
 
 ##TODO
-- [ ] Use Facebook OAuth to create unique users
+- [X] Use Facebook OAuth to create unique users
 - [ ] Fix design
 - [ ] Show rooms Facebook Users are part of.
 - [ ] Show number of members each room
